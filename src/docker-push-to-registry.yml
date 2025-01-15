@@ -54,8 +54,8 @@ create-latest-tag:
     # We cannot check for example if the tag is on the master branch
     - /^\d+\.\d+\.\d+$/
   script:
-    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest-test $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
-    - docker manifest push --insecure --purge $REGISTRY_IMAGE_BASE:latest-test
+    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
+    - docker manifest push --insecure --purge $REGISTRY_IMAGE_BASE:latest
 
 #----------
 # Cleanup
