@@ -30,7 +30,8 @@
   extends: .docker-job
   before_script:
     # - echo "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USERNAME} --password-stdin ${REGISTRY_HOST}
-    - if [ -n "${REGISTRY_PASSWORD:-}" ] && [ -n "${REGISTRY_USERNAME:-}" ] && [ -n "${REGISTRY_HOST:-}" ]; then echo "${REGISTRY_PASSWORD}" | docker login --username "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY_HOST}"; fi
+    # if username and password given then login, otherwise assume runner is already authenticated
+    - if [ -n "${REGISTRY_PASSWORD:-}" ] && [ -n "${REGISTRY_USERNAME:-}" ]; then echo "${REGISTRY_PASSWORD}" | docker login --username "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY_HOST}"; fi
 
 #----------
 # Create manifest
