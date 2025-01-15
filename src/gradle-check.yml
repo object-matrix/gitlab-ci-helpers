@@ -1,0 +1,15 @@
+# test the project
+gradle-check:
+  extends: .gradle-cache
+  stage: test
+  script:
+    - java -version
+    - gradle --build-cache check
+  artifacts:
+    when: always
+    name: "${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}_testresults"
+    paths:
+      - build/reports/
+    reports:
+      junit: build/test-results/**/TEST-*.xml
+    expire_in: 4w
