@@ -14,12 +14,12 @@
     cpuArch: "arm64"
 
 # Build docker image for amd64
-amd64:
+gradle-amd64:
   <<: *on-amd64
   extends: .build-docker-base
 
 ## Build docker image for arm64
-arm64:
+gradle-arm64:
   <<: *on-arm64
   extends: .build-docker-base
 
