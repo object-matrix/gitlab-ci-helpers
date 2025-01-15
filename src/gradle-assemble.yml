@@ -1,0 +1,12 @@
+# build the project
+gradle-assemble:
+  extends: .gradle-cache
+  stage: build
+  script:
+    - java -version
+    - gradle --build-cache assemble
+  artifacts:
+    name: "${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}-build"
+    paths:
+      - build/
+    expire_in: 3h
