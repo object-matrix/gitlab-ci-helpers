@@ -1,0 +1,9 @@
+# publish artifacts
+gradle-publish:
+  extends: .gradle-cache-pull
+  stage: publish
+  only:
+    - tags
+  script:
+    - gradle --build-cache publish
+  
