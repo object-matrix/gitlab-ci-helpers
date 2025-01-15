@@ -1,0 +1,33 @@
+#----------
+# Build images
+
+.on-amd64: &on-amd64
+  tags:
+    - docker-amd64
+  variables:
+    cpuArch: "amd64"
+
+.on-arm64: &on-arm64
+  tags:
+    - docker-arm64
+  variables:
+    cpuArch: "arm64"
+
+# Build docker image for amd64
+amd64:
+  <<: *on-amd64
+  extends: .build-docker-base
+
+## Build docker image for arm64
+arm64:
+  <<: *on-arm64
+  extends: .build-docker-base
+
+# Base task for building Docker image with gradle
+.build-docker-base:
+  extends: .gradle-cache-pull
+  stage: docker-build-images
+  only:
+    - tags
+  script:
+    - gradle --build-cache bootBuildImage --imageName $REGISTRY_IMAGE_VER-$cpuArch --publishImage
