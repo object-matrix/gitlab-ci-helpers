@@ -30,7 +30,7 @@ before_script:
     policy: pull
 
 # build the project
-build:
+gradle-assemble:
   extends: .gradle-cache
   stage: build
   script:
@@ -43,7 +43,7 @@ build:
     expire_in: 3h
 
 # test the project
-.test:
+gradle-check:
   extends: .gradle-cache
   stage: test
   script:
@@ -59,7 +59,7 @@ build:
     expire_in: 4w
 
 # publish artifacts
-.publish:
+gradle-publish:
   extends: .gradle-cache-pull
   stage: publish
   only:
