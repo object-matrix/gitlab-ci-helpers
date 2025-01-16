@@ -63,7 +63,8 @@
 
       if [ $decodeAuthConfig -eq 1 ]; then
         # extract from DOCKER_AUTH_CONFIG
-        REGISTRY_AUTH=$(echo "$DOCKER_AUTH_CONFIG" | grep -A 1 "\"$REGISTRY_HOST\"" | grep '"auth"' | awk -F'"' '{print $4}')
+        # REGISTRY_AUTH=$(echo "$DOCKER_AUTH_CONFIG" | grep -A 1 "\"$REGISTRY_HOST\"" | grep '"auth"' | awk -F'"' '{print $4}')
+        REGISTRY_AUTH=$(echo "$DOCKER_AUTH_CONFIG" | tr -d '\n' | tr -d '[[:space:]]' | sed -n -E 's/.*"'$REGISTRY_HOST'":\{"auth":"([^"]+)".*/\1/p')
         DECODED_AUTH=$(echo "$REGISTRY_AUTH" | base64 -d 2>/dev/null)
         export REGISTRY_USERNAME=$(echo "$DECODED_AUTH" | cut -d':' -f1)
         export REGISTRY_PASSWORD=$(echo "$DECODED_AUTH" | cut -d':' -f2)
