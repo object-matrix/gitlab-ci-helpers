@@ -52,10 +52,10 @@
         :
       elif [ -n "${DOCKER_AUTH_CONFIG:-}" ]; then
         decodeAuthConfig=1
-      elif [ -n "${DOCKER_AUTH_CONFIG_BASE64:-}" ]; then
-        DOCKER_AUTH_CONFIG=$(echo "$DOCKER_AUTH_CONFIG_BASE64" | base64 -d)
-        export DOCKER_AUTH_CONFIG
-        decodeAuthConfig=1
+      # elif [ -n "${DOCKER_AUTH_CONFIG_BASE64:-}" ]; then
+      #   DOCKER_AUTH_CONFIG=$(echo "$DOCKER_AUTH_CONFIG_BASE64" | base64 -d)
+      #   export DOCKER_AUTH_CONFIG
+      #   decodeAuthConfig=1
       else
         # assume authenticated already in some other way 
         skipLogin=1
