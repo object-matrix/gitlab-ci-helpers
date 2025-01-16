@@ -30,4 +30,18 @@ gradle-arm64:
   only:
     - tags
   script:
-    - gradle --build-cache bootBuildImage --imageName $REGISTRY_IMAGE_VER-$cpuArch --publishImage
+    - |
+      if [ -n "${REGISTRY_USERNAME:-}" ] && [ -n "${REGISTRY_PASSWORD:-}" ]; then
+        # will use username and password environemnt variables indirectly
+        :
+      elif [ -n "${DOCKER_AUTH_CONFIG:-}" ]; then
+        # extract from DOCKER_AUTH_CONFIG
+        REGISTRY_AUTH=$(echo "$DOCKER_AUTH_CONFIG" | grep -A 1 "\"$REGISTRY_HOST\"" | grep '"auth"' | awk -F'"' '{print $4}')
+        DECODED_AUTH=$(echo "$REGISTRY_AUTH" | base64 -d 2>/dev/null)
+        export REGISTRY_USERNAME=$(echo "$DECODED_AUTH" | cut -d':' -f1)
+        export REGISTRY_PASSWORD=$(echo "$DECODED_AUTH" | cut -d':' -f2)
+      else
+        # assume authenticated in some other way
+        :
+      fi
+      gradle --build-cache bootBuildImage --imageName $REGISTRY_IMAGE_VER-$cpuArch --publishImage
