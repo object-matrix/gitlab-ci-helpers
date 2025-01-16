@@ -37,10 +37,6 @@ gradle-arm64:
         :
       elif [ -n "${DOCKER_AUTH_CONFIG:-}" ]; then
         decodeAuthConfig=1
-      # elif [ -n "${DOCKER_AUTH_CONFIG_BASE64:-}" ]; then
-      #   DOCKER_AUTH_CONFIG=$(echo "$DOCKER_AUTH_CONFIG_BASE64" | base64 -d)
-      #   export DOCKER_AUTH_CONFIG
-      #   decodeAuthConfig=1
       fi
 
       if [ $decodeAuthConfig -eq 1 ]; then
