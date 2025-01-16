@@ -1,5 +1,5 @@
 #----------
-# Build images
+# Build Docker images using Spring Boot bootBuilImage and publish to registry
 
 .on-amd64: &on-amd64
   tags:
