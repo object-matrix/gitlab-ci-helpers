@@ -32,7 +32,7 @@ gradle-arm64:
   script:
     - |
       if [ -n "${REGISTRY_USERNAME:-}" ] && [ -n "${REGISTRY_PASSWORD:-}" ]; then
-        # will use username and password environemnt variables indirectly
+        # will use username and password environment variables indirectly
         :
       elif [ -n "${DOCKER_AUTH_CONFIG:-}" ]; then
         # extract from DOCKER_AUTH_CONFIG
