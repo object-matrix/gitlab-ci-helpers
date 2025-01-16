@@ -29,9 +29,25 @@
 .docker-auth-job:
   extends: .docker-job
   before_script:
-    # - echo "${REGISTRY_PASSWORD}" | docker login --username ${REGISTRY_USERNAME} --password-stdin ${REGISTRY_HOST}
-    # if username and password given then login, otherwise assume runner is already authenticated
-    - if [ -n "${REGISTRY_PASSWORD:-}" ] && [ -n "${REGISTRY_USERNAME:-}" ]; then echo "${REGISTRY_PASSWORD}" | docker login --username "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY_HOST}"; fi
+    - |
+      skipLogin=false
+      if [ -n "${REGISTRY_USERNAME:-}" ] && [ -n "${REGISTRY_PASSWORD:-}" ]; then
+        # use environment variable credentials directly
+        :
+      elif [ -n "${DOCKER_AUTH_CONFIG:-}" ]; then
+        # extract credentials from DOCKER_AUTH_CONFIG
+        REGISTRY_AUTH=$(echo "$DOCKER_AUTH_CONFIG" | grep -A 1 "\"$REGISTRY_HOST\"" | grep '"auth"' | awk -F'"' '{print $4}')
+        DECODED_AUTH=$(echo "$REGISTRY_AUTH" | base64 -d 2>/dev/null)
+        export REGISTRY_USERNAME=$(echo "$DECODED_AUTH" | cut -d':' -f1)
+        export REGISTRY_PASSWORD=$(echo "$DECODED_AUTH" | cut -d':' -f2)
+      else
+        # assume no need to authenticate
+        skipLogin=true
+      fi
+
+      if [ ! "$skipLogin" = "true" ]; then
+        echo "${REGISTRY_PASSWORD}" | docker login --username "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY_HOST}";
+      fi
 
 #----------
 # Create manifest
@@ -77,4 +93,3 @@ cleanup-arm64:
   stage: docker-cleanup-images
   script:
     - docker image rm -f $REGISTRY_IMAGE_VER-$cpuArch
-
