@@ -19,6 +19,11 @@
   variables:
     cpuArch: "arm64"
 
+# Checks SKIP_ARM64 variable and changes armImageName script variable to empty instead of $REGISTRY_IMAGE_VER-arm64
+# This is useful to exclude arm64 from manifests in scripts etc.
+.arm-image-name-check: &arm-image-name-check
+  armImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$REGISTRY_IMAGE_VER-arm64")
+  
 .docker-job:
   image: docker:24-cli
   variables:
@@ -56,16 +61,6 @@
         echo "${REGISTRY_PASSWORD}" | docker login --username "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY_HOST}";
       fi
 
-# .arm-image-name-check: &arm-image-name-check
-#   - |
-#     armImageName=$REGISTRY_IMAGE_VER-arm64
-#     if [ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ]; then
-#       armImageName=""
-#     fi
-
-.arm-image-name-check: &arm-image-name-check
-  armImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$REGISTRY_IMAGE_VER-arm64")
-  
 #----------
 # Create manifest
 # Create docker manifest list for tag :version
@@ -76,9 +71,6 @@ create-manifest:
     - *arm-image-name-check
     - docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $armImageName
     - docker manifest push --insecure --purge $REGISTRY_IMAGE_VER
-    # - |
-    #   docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
-    #   docker manifest push --insecure --purge $REGISTRY_IMAGE_VER
 
 #----------
 # Create tag :latest
