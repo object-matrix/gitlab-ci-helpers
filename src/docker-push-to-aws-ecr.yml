@@ -22,10 +22,14 @@
 .arm64-image-name-check: &arm64-image-name-check
   arm64ImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$AWS_ECR_REGISTRY_IMAGE_VER-arm64")
 
+# Part of a script to anchor
+# Checks if script executes with variable $cpuArch set to "arm64" and SKIP_ARM64 is set to true/yes.
+# If that's the case then executing script exits with status 0
 .script-exit0-if-arm64-skip-set: &script-exit0-if-arm64-skip-set
   configuredToSkipArm64=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "true" || echo "false") &&
-  skipArm64=$([ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ] && echo "true" || echo "false") &&
-  if [ "$skipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
+  if [ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
+  # skipArm64=$([ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ] && echo "true" || echo "false") &&
+  # if [ "$skipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
   
 .docker-ecr-auth-job:
   image: $REGISTRY_HOST/docker-and-aws:0.0.1-$cpuArch
