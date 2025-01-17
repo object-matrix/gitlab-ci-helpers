@@ -1,7 +1,18 @@
 #---------------------------------
 # AWS ECR Docker jobs
 #
-
+# Input variables:
+# AWS_ACCOUNT_ID - acoount ID in AWS
+# AWS_REGION - AWS region
+# AWS_ECR_NAMESPACE - optional, namespace of the repository in AWS, e.g. my-namespace
+# AWS_PROFILE - optional, profile to use for authentication
+# SKIP_ARM64 - optional, operations for arm64 architecture will be silently skipped
+#
+# Derived variables:
+# AWS_ECR_REGISTRY - name of the registry, e.g. 1234.dkr.ecr.us-east1.amazonaws.com
+# AWS_ECR_REGISTRY_IMAGE_BASE - base name of the target image e.g. 1234.dkr.ecr.us-east1.amazonaws.com/my-namespace/my-project
+# AWS_ECR_REGISTRY_IMAGE_VER - name of the target image, including version e.g. 1234.dkr.ecr.us-east1.amazonaws.com/my-namespace/my-project:1.2.3
+#
 #----------
 # Base jobs
 
@@ -28,8 +39,6 @@
 .script-exit0-if-arm64-skip-set: &script-exit0-if-arm64-skip-set
   configuredToSkipArm64=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "true" || echo "false") &&
   if [ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
-  # skipArm64=$([ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ] && echo "true" || echo "false") &&
-  # if [ "$skipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
   
 .docker-ecr-auth-job:
   image: $REGISTRY_HOST/docker-and-aws:0.0.1-$cpuArch
