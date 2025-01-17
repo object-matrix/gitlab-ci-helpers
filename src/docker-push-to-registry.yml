@@ -63,6 +63,9 @@
 #       armImageName=""
 #     fi
 
+.arm-image-name-check: &arm-image-name-check
+  armImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$REGISTRY_IMAGE_VER-arm64")
+  
 #----------
 # Create manifest
 # Create docker manifest list for tag :version
@@ -70,8 +73,8 @@ create-manifest:
   stage: docker-publish-manifests
   extends: .docker-auth-job
   script:
-    # - *arm-image-name-check
-    - docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
+    - *arm-image-name-check
+    - docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $armImageName
     - docker manifest push --insecure --purge $REGISTRY_IMAGE_VER
     # - |
     #   docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
@@ -89,7 +92,8 @@ create-latest-tag:
     # We cannot check for example if the tag is on the master branch
     - /^\d+\.\d+\.\d+$/
   script:
-    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest $REGISTRY_IMAGE_VER-amd64 $REGISTRY_IMAGE_VER-arm64
+    - *arm-image-name-check
+    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest $REGISTRY_IMAGE_VER-amd64 $armImageName
     - docker manifest push --insecure --purge $REGISTRY_IMAGE_BASE:latest
 
 #----------
