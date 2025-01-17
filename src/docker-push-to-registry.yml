@@ -1,6 +1,8 @@
 
-#---------------------------------------
-# Docker jobs
+#
+# Docker jobs to create multi-arch manifest for given git tag and manifest for 'latest' if git tag is x.y.z (semantic versioning).
+# This is part of docker-publish-manifests stage.
+# In addition cleanup jobs are included as part of 'docker-cleanup-images' stage
 
 #----------
 # Base jobs
@@ -25,6 +27,7 @@
   dependencies: []
   only:
     - tags
+
 .docker-auth-job:
   extends: .docker-job
   before_script:      
