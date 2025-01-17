@@ -62,7 +62,8 @@ For `docker-push-to-aws-ecr.yml`
   AWS_ECR_NAMESPACE=my-namespace
   ```
 
-  
+Optional variable `SKIP_ARM64`
+If set to `true/yes` allows to silently ignore jobs on arm64 architecture if the software component is not build for it.
 
 # Examples
 
