@@ -11,6 +11,8 @@
 #
 # Input variables:
 # REGISTRY_HOST - hostport of the Docker registry, e.g. my-registry or my-registry:5000
+#
+# Derived variables:
 # REGISTRY_IMAGE_BASE - base name of the target image e.g. my-registry:5000/my-project
 # REGISTRY_IMAGE_VER - name of the target image, including version e.g. my-registry:5000/my-project:1.2.3
 #
