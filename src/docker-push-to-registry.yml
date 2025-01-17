@@ -21,8 +21,8 @@
 
 # Checks SKIP_ARM64 variable and changes armImageName script variable to empty instead of $REGISTRY_IMAGE_VER-arm64
 # This is useful to exclude arm64 from manifests in scripts etc.
-.arm-image-name-check: &arm-image-name-check
-  armImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$REGISTRY_IMAGE_VER-arm64")
+.arm64-image-name-check: &arm64-image-name-check
+  arm64ImageName=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "" || echo "$REGISTRY_IMAGE_VER-arm64")
   
 .docker-job:
   image: docker:24-cli
@@ -68,8 +68,8 @@ create-manifest:
   stage: docker-publish-manifests
   extends: .docker-auth-job
   script:
-    - *arm-image-name-check
-    - docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $armImageName
+    - *arm64-image-name-check
+    - docker manifest create --insecure $REGISTRY_IMAGE_VER $REGISTRY_IMAGE_VER-amd64 $arm64ImageName
     - docker manifest push --insecure --purge $REGISTRY_IMAGE_VER
 
 #----------
@@ -84,8 +84,8 @@ create-latest-tag:
     # We cannot check for example if the tag is on the master branch
     - /^\d+\.\d+\.\d+$/
   script:
-    - *arm-image-name-check
-    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest $REGISTRY_IMAGE_VER-amd64 $armImageName
+    - *arm64-image-name-check
+    - docker manifest create --insecure $REGISTRY_IMAGE_BASE:latest $REGISTRY_IMAGE_VER-amd64 $arm64ImageName
     - docker manifest push --insecure --purge $REGISTRY_IMAGE_BASE:latest
 
 #----------
