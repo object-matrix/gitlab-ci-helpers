@@ -29,7 +29,9 @@
   variables:
     # does not use source code
     GIT_STRATEGY: none
-  dependencies: []
+  # disabled as it forces external script to explicitly declare dependencies again
+  # by default Gitlab shares artificats between jobs so keep it that way
+  # dependencies: []
   only:
     - tags
 
