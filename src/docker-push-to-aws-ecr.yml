@@ -132,5 +132,6 @@ cleanup-ecr-arm64:
   stage: docker-cleanup-images
   script:
     - docker image rm -f $AWS_ECR_REGISTRY_IMAGE_VER-$cpuArch
+    # this is likely redundant call since previous call untags everything
     - docker image rm -f $AWS_ECR_REGISTRY_IMAGE_VER
 #----------
