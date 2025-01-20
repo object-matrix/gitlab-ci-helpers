@@ -1,0 +1,42 @@
+#
+# Builds Docker images from root of the project and pushes them to local registry.
+# Builds are executed on both amd64 and arm64 (unless SKIP_ARM64 is set to true/yes).
+#
+
+# Part of a script to anchor
+# Checks if script executes with variable $cpuArch set to "arm64" and SKIP_ARM64 is set to true/yes.
+# If that's the case then executing script exits with status 0
+.script-exit0-if-arm64-skip-set: &script-exit0-if-arm64-skip-set
+  configuredToSkipArm64=$([ "${SKIP_ARM64:-}" = "true" ] || [ "${SKIP_ARM64:-}" = "yes" ] && echo "true" || echo "false") &&
+  if [ "$cpuArch" = "arm64" ] && [ "$configuredToSkipArm64" = "true" ]; then echo "Configured to skip arm64 architecture. Exiting with code 0"; exit 0; fi
+
+# Build docker image for amd64
+docker-amd64:
+  extends: .build-docker-base
+  tags:
+    - docker-amd64
+  variables:
+    cpuArch: "amd64"
+
+## Build docker image for arm64
+docker-arm64:
+  extends: .build-docker-base
+  tags:
+    - docker-arm64
+  variables:
+    cpuArch: "arm64"
+
+# template task for building Docker image
+.build-docker-base:
+  stage: docker-build-images
+  image: docker:24-cli
+  extends: .docker-auth-job
+  variables:
+    # re-enable fetching git sourcecode
+    GIT_STRATEGY: fetch
+  only:
+    - tags
+  script:
+    - *script-exit0-if-arm64-skip-set
+    - docker build -t $REGISTRY_IMAGE_VER-$cpuArch .
+    - docker push $REGISTRY_IMAGE_VER-$cpuArch
